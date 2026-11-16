@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="theme-color" content="#0b1412"><meta name="description" content="仅收录指定表格内170家小鹏汽车门店。输入地址，按直线距离查找最近的门店。">
+ <title>小鹏门店地图｜找到离你更近的小鹏门店</title>
+ <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b1412'/%3E%3Cpath d='M13 19l19 14 19-14M32 33v14' stroke='%23b9f442' stroke-width='5' fill='none'/%3E%3C/svg%3E">
+ <link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="reference.css"><link rel="stylesheet" href="styles.css">
+ <script src="vendor/leaflet.js" defer></script><script src="app.mjs" type="module"></script>
+</head>
+<body>
+ <a class="skip-link" href="#locator">跳转到地图</a>
+ <header class="site-header">
+  <a class="brand" href="#top" aria-label="小鹏门店地图首页"><span class="brand-mark" aria-hidden="true"></span><span>XPENG <small>小鹏门店地图</small></span></a>
+  <nav aria-label="主导航"><a href="#locator">门店地图</a><a href="#data-notes">数据说明</a></nav>
+  <a class="header-phone" href="https://www.xiaopeng.com/pengmetta.html" target="_blank" rel="noopener noreferrer">查看小鹏官网 ↗</a>
+ </header>
+ <main id="top">
+  <section class="hero" aria-labelledby="page-title"><div class="hero-inner">
+   <div class="hero-copy">
+    <p class="hero-overline">表内门店 · 就近查找</p>
+    <h1 id="page-title">离你更近的<br><em>小鹏门店</em></h1>
+    <p class="hero-intro">输入你所在的城市和地址，查找距离最近的小鹏汽车门店。<br class="desktop-break">每一家，都来自你的门店表格。</p>
+    <form id="searchForm" class="search-form" autocomplete="off">
+     <label class="sr-only" for="searchInput">输入城市和详细地址或地点名称</label>
+     <div class="search-shell"><span class="search-pulse" aria-hidden="true"></span><input id="searchInput" type="search" placeholder="试试：广州天河城 / 北京西站 / 上海虹桥站" maxlength="160" aria-controls="suggestions" aria-expanded="false"><button id="searchButton" type="submit">查最近门店 <span aria-hidden="true">↗</span></button></div>
+     <div id="suggestions" class="suggestions" aria-label="选择具体位置" hidden></div>
+     <div class="search-meta"><span id="searchStatus" role="status" aria-live="polite">请输入城市和详细地址，或在地图上点选位置</span><button id="locationButton" type="button">◎ 使用我的位置</button></div>
+    </form>
+    <div class="quick-row"><span>快速查询</span><button type="button" data-query="广州天河城">广州天河城</button><button type="button" data-query="北京西站">北京西站</button><button type="button" data-query="上海虹桥站">上海虹桥站</button></div>
+   </div>
+   <div class="hero-aside" aria-label="门店收录范围"><div><strong>170</strong><span>表内小鹏门店</span></div><div><strong id="cityStat">—</strong><span>覆盖城市</span></div><div><strong id="provinceStat">—</strong><span>省级行政区</span></div></div>
+  </div></section>
+  <section id="locator" class="locator-section" aria-labelledby="locator-title">
+   <div class="section-heading"><div><p class="section-kicker">XPENG STORE NETWORK</p><h2 id="locator-title">小鹏门店网络</h2></div><p>地图与列表同步查看。输入地址后，按直线距离由近到远排列；你也可以点击地图，直接设置查询位置。</p></div>
+   <div class="locator-controls">
+    <div class="filters"><label>省份<select id="provinceFilter"><option value="">全部省份</option></select></label><label>城市<select id="cityFilter"><option value="">全部城市</option></select></label><button id="clearFilters" type="button">重置筛选</button></div>
+    <div class="scope-count" id="scopeCount">只显示表内170家门店</div>
+   </div>
+   <div class="mobile-view" aria-label="查看方式"><button id="showMap" class="is-active" type="button">地图</button><button id="showList" type="button">门店列表</button></div>
+   <div class="locator-layout" data-mobile-view="map">
+    <div class="map-card">
+     <div class="map-toolbar"><div class="map-title"><i class="live-dot" aria-hidden="true"></i><strong id="mapTitle">全部表内门店</strong><small id="mapSubtitle">170家门店</small></div><div class="map-actions"><button id="resetMap" type="button">⤢ 查看全部</button></div></div>
+     <div class="map-wrap"><div id="storeMap" aria-label="小鹏汽车门店位置地图"></div><div id="mapNotice" class="map-notice" role="status" hidden>地图底图暂未加载，门店标记与查询仍可使用。</div><div class="map-hint">点击地图，设为查询位置</div></div>
+     <div class="map-legend"><span><i class="legend-store"></i>表内门店</span><span><i class="legend-origin"></i>查询位置</span><small>直线距离 · 实际路线以导航为准</small></div>
+    </div>
+    <aside class="results-panel" aria-labelledby="results-title"><div class="results-heading"><div><small id="resultEyebrow">按原表顺序</small><h3 id="results-title">表内门店</h3></div><span id="resultCount">170家</span></div><div id="originSummary" class="origin-summary" hidden><span id="originName"></span><button id="clearOrigin" type="button" aria-label="清除查询位置">×</button></div><div id="nearestCard" class="nearest-card" hidden></div><div id="storeList" class="store-list"><p class="empty-state">正在载入门店…</p></div></aside>
+   </div>
+   <p class="locator-note">已收录170家表内门店，地图位置全部可查询。商场内门店以商场位置标注，距离仅供就近比较。</p>
+  </section>
+  <section id="data-notes" class="data-note"><div><p class="section-kicker">ABOUT THIS MAP</p><h2>你的表格，<br>你的门店地图。</h2></div><div class="note-copy"><p>本网站仅收录本次表格内的170家门店，不加入表外门店。名称沿用原表，地址参考小鹏官网及已核对的门店资料。</p><p>距离为两点之间的直线距离，不代表驾车或步行路程。点击“到这里”可在高德地图查看实际路线。输入的地址与定位不保存在本网站；地址搜索由OpenStreetMap提供，可能需要补充城市或通过地图微调。</p><p>166家已对应官网记录，4家按原表门店所在商场定位；门店详情中可查看位置来源。官网未列出同名记录不代表停业或迁址。</p><p class="source-links">资料核对：2026年11月5日　 <a href="https://www.xiaopeng.com/pengmetta.html" target="_blank" rel="noopener noreferrer">小鹏官网 ↗</a>　<a href="门店位置.xlsx" download>下载门店表格 ↓</a></p></div></section>
+ </main>
+ <footer><span>XPENG · 表内门店查询工具</span><span>非小鹏官方网站　·　距离为直线距离</span></footer>
+ <noscript><p class="empty-state">请启用JavaScript以查看地图和搜索门店。</p></noscript>
+</body></html>
